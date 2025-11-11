@@ -14,6 +14,7 @@ authors = [
 license = {text = "MIT"}
 dependencies = [
   "python-chess>=1.999",
+  "requests>=2.32.0",
 ]
 
 [project.scripts]

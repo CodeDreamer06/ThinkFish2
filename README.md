@@ -48,9 +48,9 @@ Planned initial tool surface (subject to change as we implement):
 - moves.uci_to_san: convert UCI moves to SAN (and optionally to annotated algebraic)
 - moves.san_to_uci: convert SAN to UCI given a FEN context
 - pgn.load: parse PGN and return a normalized representation
-- pgn.review_overall: produce structured, engine-grounded game insights
-- pgn.review_white: White-centric summary grounded in engine deltas
-- pgn.review_black: Black-centric summary grounded in engine deltas
+- pgn.review_overall: produce structured, engine-grounded game insights (uses LLM if VOIDAI_API_KEY set)
+- pgn.review_white: White-centric summary grounded in engine deltas (uses LLM if available)
+- pgn.review_black: Black-centric summary grounded in engine deltas (uses LLM if available)
 
 Each tool will:
 - Accept well-specified inputs (FEN/PGN/moves, numeric limits)
@@ -109,25 +109,35 @@ Set STOCKFISH_PATH if the binary is not on PATH.
 
 ## Configuration
 
-Environment variables (planned):
+Environment variables:
 - STOCKFISH_PATH: path to Stockfish binary if not on PATH
 - THINKFISH2_THREADS: number of engine threads
 - THINKFISH2_HASH_MB: transposition table size (MB)
 - THINKFISH2_MIN_DEPTH: minimum depth for evaluations
 - THINKFISH2_SKILL: engine skill level (0-20)
+- VOIDAI_API_KEY: API key for VoidAI chat completions (required for LLM summaries)
+- VOIDAI_MODEL: Model name for VoidAI (default: kimi-k2-instruct)
 
 Additional MCP or engine options may be added as the toolset grows.
 
 
-## Running the MCP Server
+## Running the Server
 
-After installation, you’ll be able to run the server via:
+Run the JSON-RPC style server (MCP-like shim):
 - python -m thinkfish2.server
 
-This will start the MCP server and register tools listed above. Refer to your MCP client’s docs for how to connect to a custom MCP server.
+Send newline-delimited JSON requests on stdin, receive JSON responses on stdout. Example:
+
+Input:
+{"id": 1, "method": "engine.info", "params": {}}
+{"id": 2, "method": "position.evaluate", "params": {"fen": "startpos FEN here", "depth": 12}}
+
+Refer to your MCP client’s docs for how to integrate with a custom server; this shim can be adapted to a true MCP transport.
 
 
-## Example: Evaluate a Position
+## Examples
+
+### Evaluate a Position
 
 - Tool: position.evaluate
 - Input: { fen: "<FEN>", depth: 18 }
@@ -142,6 +152,12 @@ This will start the MCP server and register tools listed above. Refer to your MC
 Your LLM can then transform this into a natural-language explanation or compare alternatives.
 
 
+### Review a PGN (uses LLM if configured)
+
+- Tool: pgn.review_overall
+- Input: { pgn: "<PGN>", depth: 12 }
+- Output: { summary: string, key_moments: string[], side: "overall" }
+
 ## Before/After FEN Prompting
 
 We adopt the original project’s key insight: include both pre- and post-move FEN states to help the LLM understand board changes. ThinkFish2 will provide optional utilities to generate this pair for each half-move, enabling downstream prompts to be more grounded and less prone to hallucination.
@@ -150,12 +166,13 @@ We adopt the original project’s key insight: include both pre- and post-move F
 ## Roadmap
 
 - v0.1
-  - Minimal MCP server with engine.info, position.evaluate, moves.generate_legal
-  - PGN parsing and basic conversions (UCI/SAN)
+  - Minimal server with engine.info, position.evaluate, moves.generate_legal (DONE)
+  - PGN parsing and basic conversions (UCI/SAN) (DONE)
 - v0.2
-  - Review tools (overall/white/black) with structured outputs
-  - Search line and blunder detection helpers
+  - Review tools (overall/white/black) with LLM summaries via VoidAI (DONE)
+  - Search line and blunder detection helpers (BASIC BLUNDER HEURISTIC DONE)
 - v0.3
+  - True MCP transport and typed tool schemas
   - Caching, parallel analysis, and batch PGN review
   - Optional opening book integration
 

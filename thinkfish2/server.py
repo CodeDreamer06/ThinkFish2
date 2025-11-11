@@ -20,6 +20,7 @@ from .chessio import (
     uci_to_san,
 )
 from .engine import StockfishEngine
+from .review import review_game
 
 _engine = StockfishEngine()
 
@@ -61,6 +62,15 @@ def handle_request(method: str, params: Dict[str, Any]) -> Dict[str, Any]:
         return {"ok": True, "result": san_to_uci(fen, san_moves)}
     if method == "pgn.load":
         return {"ok": True, "result": load_pgn(params["pgn"])}
+    if method == "pgn.review_overall":
+        depth = int(params.get("depth", 12))
+        return {"ok": True, "result": review_game(params["pgn"], side="overall", depth=depth)}
+    if method == "pgn.review_white":
+        depth = int(params.get("depth", 12))
+        return {"ok": True, "result": review_game(params["pgn"], side="white", depth=depth)}
+    if method == "pgn.review_black":
+        depth = int(params.get("depth", 12))
+        return {"ok": True, "result": review_game(params["pgn"], side="black", depth=depth)}
 
     return {"ok": False, "error": f"Unknown method: {method}"}
 
