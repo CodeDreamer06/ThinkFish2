@@ -87,6 +87,32 @@ Recommended OS: Linux, macOS, or WSL on Windows.
 
 ## Installation
 
+## Quick CLI Usage
+
+- Ensure you have Python 3.10+ and Stockfish installed and on PATH.
+- Run commands via the module runner:
+
+Examples:
+
+- Generate legal moves for a FEN:
+  - python -m thinkfish2.cli legal "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
+- Convert UCI moves to SAN from a given FEN:
+  - python -m thinkfish2.cli convert "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" --uci e2e4 e7e5
+
+- Convert SAN moves to UCI from a given FEN:
+  - python -m thinkfish2.cli convert "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" --san e4 e5
+
+- Load a PGN file and output normalized data as JSON:
+  - python -m thinkfish2.cli pgn path/to/game.pgn
+
+- Evaluate a position with Stockfish:
+  - python -m thinkfish2.cli eval "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" --depth 14
+
+- Start the minimal JSON-RPC style server:
+  - python -m thinkfish2.server
+
+
 1) Clone the repo
 - git clone https://github.com/CodeDreamer06/ThinkFish2.git
 - cd ThinkFish2
