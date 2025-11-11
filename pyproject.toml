@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thinkfish2"
+version = "0.1.0"
+description = "MCP server for chess analysis with Stockfish + LLM tool-use"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  {name = "ThinkFish2 Contributors"}
+]
+license = {text = "MIT"}
+dependencies = [
+  "python-chess>=1.999",
+]
+
+[project.scripts]
+thinkfish2 = "thinkfish2.server:main"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+addopts = "-q"
